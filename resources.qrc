@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/style">
+        <file>NodeTree.qss</file>
+    </qresource>
+</RCC>
