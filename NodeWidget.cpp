@@ -2,6 +2,7 @@
 #include "ui_NodeWidget.h"
 #include "FloatSlider.h"
 #include <QLineEdit>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
@@ -40,6 +41,11 @@ void NodeWidget::valueChanged(QString value)
     emit emitValueChanged(value);
 }
 
+void NodeWidget::addNode()
+{
+    emit emitAddNode();
+}
+
 void NodeWidget::paintEvent(QPaintEvent *)
  {  // This allows this widget to be used in the stylesheet
      QStyleOption opt;
@@ -47,3 +53,15 @@ void NodeWidget::paintEvent(QPaintEvent *)
      QPainter p(this);
      style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
  }
+
+void NodeWidget::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::RightButton)
+    {
+        QMenu menu;
+        QAction createNode("Add Node", this);
+        connect(&createNode, &QAction::triggered, this, &NodeWidget::addNode);
+        menu.addAction(&createNode);
+        menu.exec(event->globalPosition().toPoint(), &createNode);
+    }
+}
