@@ -1,7 +1,6 @@
 #include "NodeTree.h"
 #include "ui_NodeTree.h"
 #include "Node.h"
-#include <QDebug>
 #include <QPainter>
 
 #define NODE_SPACING 20
@@ -12,7 +11,7 @@ NodeTree::NodeTree(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowTitle("Node Tree");
-    resize(1000, 1000);
+    resize(1800, 1200);
     Node* base_node = createNode(nullptr, FLOAT, "Base");
     Node* child_1 = createNode(base_node, STRING, "Child 1");
     Node* child_2 = createNode(base_node, STRING, "Child 2");
@@ -63,10 +62,6 @@ Node *NodeTree::createNode(Node *parent_node, NodeType type, QString title)
     NodeWidget* widget = new NodeWidget(type, title, this);
     Node* node = new Node(title, type, widget, parent_node);
 
-    // Connect Widget Input with Node Data Structure
-    connect(widget, &NodeWidget::emitValueChanged, node, &Node::setValue);
-    m_nodes << node;
-
     if(parent_node == nullptr)
     {
         // place base node near top center of the window
@@ -75,19 +70,40 @@ Node *NodeTree::createNode(Node *parent_node, NodeType type, QString title)
     }
     else if(parent_node->childCount() <= 2)
     {
-        // place node appropriately below parent
-        if(parent_node->childCount() == 1)
-        {
-            widget->move(parent_node->getWidget()->x() - (NODE_SIZE / 2) - NODE_SPACING, parent_node->getWidget()->y() + NODE_SIZE + NODE_SPACING);
-            widget->show();
-        }
-        else
-        {
-            widget->move(parent_node->getWidget()->x() + (NODE_SIZE / 2) + NODE_SPACING, parent_node->getWidget()->y() + NODE_SIZE + NODE_SPACING);
-            widget->show();
-        }
-
+        placeNode(node);
     }
+    else
+    {
+        delete widget;
+        delete node;
+        return nullptr;
+    }
+    // Connect Widget Input with Node Data Structure
+    connect(widget, &NodeWidget::emitValueChanged, node, &Node::setValue);
+    connect(widget, &NodeWidget::emitAddNode, node, &Node::addChild);
+    connect(node, &Node::emitAddChild, this, &NodeTree::createNode);
+    m_nodes << node;
+    update();   // to trigger paint event
     return node;
+}
+
+void NodeTree::placeNode(Node *node)
+{
+    Node *parent_node = node->getParent();
+    NodeWidget *widget = node->getWidget();
+
+    // place node appropriately below parent
+    if(parent_node->childCount() == 1)
+    {
+        node->m_orientation = Node::LEFT;
+        widget->move(parent_node->getWidget()->x() - (NODE_SIZE / 2) - NODE_SPACING, parent_node->getWidget()->y() + NODE_SIZE + NODE_SPACING);
+        widget->show();
+    }
+    else
+    {
+        node->m_orientation = Node::RIGHT;
+        widget->move(parent_node->getWidget()->x() + (NODE_SIZE / 2) + NODE_SPACING, parent_node->getWidget()->y() + NODE_SIZE + NODE_SPACING);
+        widget->show();
+    }
 }
 
