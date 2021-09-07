@@ -26,14 +26,17 @@ public:
 
 signals:
     void emitValueChanged(QString);
+    void emitAddNode();
 
 protected:
     void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent *event);
 private slots:
     void valueChanged(QString value);
 
 private:
     Ui::NodeWidget *ui;
+    void addNode();
 };
 
 #endif // NODEWIDGET_H
