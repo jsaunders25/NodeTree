@@ -27,5 +27,6 @@ private slots:
 private:
     Ui::NodeTree *ui;
     QVector<Node*> m_nodes;
+    void placeNode(Node *node);
 };
 #endif // NODETREE_H
