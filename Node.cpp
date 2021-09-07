@@ -49,6 +49,11 @@ void Node::setValue(QString value)
     m_value = value;
 }
 
+void Node::addChild()
+{
+    emit emitAddChild(this, m_type, "Child of " + m_title);
+}
+
 void Node::setLeftChild(Node *node)
 {
     m_left_child = node;
