@@ -6,8 +6,14 @@
 
 class Node : public QObject
 {
+
 Q_OBJECT
-public:    
+public:
+    enum NodeOrientation
+    {
+        LEFT = 0,
+        RIGHT
+    };
     Node(QString title, NodeType type, NodeWidget* widget, Node* parent = nullptr);
     Node* getLeftChild();
     Node* getRightChild();
@@ -16,9 +22,14 @@ public:
     NodeWidget* getWidget();
     NodeType getType();
     int m_children;
+    NodeOrientation m_orientation;
+
+signals:
+    void emitAddChild(Node*, NodeType, QString);
 
 public slots:
     void setValue(QString value);
+    void addChild();
 
 protected:
     void setLeftChild(Node* node);
